@@ -6,14 +6,14 @@ import (
 )
 
 type Server struct {
-	echo *echo.Echo
+	ServEcho *echo.Echo
 }
 
 func New() *Server {
 	e := echo.New()
-	return &Server{echo: e}
+	return &Server{ServEcho: e}
 }
 
 func (s *Server) Start(addr string) error {
-	return s.echo.Start(addr)
+	return s.ServEcho.Start(addr)
 }
