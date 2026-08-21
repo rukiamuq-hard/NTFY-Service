@@ -1,13 +1,15 @@
 package app
 
 import (
-	"Service/internal/echo-serv"
+	es "Service/internal/echo-serv"
+	ts "Service/internal/tg-bot"
 	"Service/internal/user"
 )
 
 type App struct {
-	serv     *echoserv.Server
+	serv     *es.Server
 	uhandler *uhandl.UserHandler
+	tservice *ts.TGService
 }
 
 func New() *App {
@@ -15,10 +17,11 @@ func New() *App {
 }
 
 func (a *App) Start() error {
-	a.serv = echoserv.New()
+	a.serv = es.New()     // echo server
+	a.tservice = ts.New() // tg service
 
 	//handlers
-	a.uhandler = uhandl.New()
+	a.uhandler = uhandl.New(a.tservice)
 	a.uhandler.Register(a.serv.ServEcho)
 
 	if err := a.serv.Start(":8080"); err != nil {
