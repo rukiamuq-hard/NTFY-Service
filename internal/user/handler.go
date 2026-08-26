@@ -1,20 +1,21 @@
-package uhandl
+package user
 
 import (
 	"Service/internal/tg-bot"
-	"fmt"
 	"strconv"
 
 	"github.com/labstack/echo/v5"
 )
 
 type UserHandler struct {
-	tService *tServ.TGService
+	tService   *tServ.TGService
+	repository *Repository
 }
 
-func New(tService *tServ.TGService) *UserHandler {
+func New(tService *tServ.TGService, repo *Repository) *UserHandler {
 	return &UserHandler{
-		tService: tService,
+		tService:   tService,
+		repository: repo,
 	}
 }
 
@@ -32,7 +33,13 @@ func (h *UserHandler) Send(c *echo.Context) error {
 		return c.JSON(400, "invalid chat_id")
 	}
 
+	ctx := c.Request().Context()
+
 	if err := h.tService.Send(token, id, message); err != nil {
+		return err
+	}
+
+	if err := h.repository.StoreData(ctx, token, id, message); err != nil {
 		return err
 	}
 
