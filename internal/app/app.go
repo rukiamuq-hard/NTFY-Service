@@ -1,11 +1,18 @@
 package app
 
 import (
-	"Service/internal/echo-serv"
+	es "Service/internal/echo-serv"
+	"Service/internal/repository"
+	ts "Service/internal/tg-bot"
+	"Service/internal/user"
 )
 
 type App struct {
-	serv *echoserv.Server
+	serv        *es.Server
+	uhandler    *user.UserHandler
+	tservice    *ts.TGService
+	mrepository *repository.Repository // main repository
+	urepository *user.Repository
 }
 
 func New() *App {
@@ -13,7 +20,21 @@ func New() *App {
 }
 
 func (a *App) Start() error {
-	a.serv = echoserv.New()
+
+	a.mrepository = repository.New()
+	if err := a.mrepository.Connect(); err != nil {
+		return err
+	}
+
+	a.urepository = user.NewUserRepo(a.mrepository.Mydb)
+
+	a.serv = es.New()     // echo server
+	a.tservice = ts.New() // tg service
+
+	//handlers
+	a.uhandler = user.New(a.tservice, a.urepository)
+	a.uhandler.Register(a.serv.ServEcho)
+
 	if err := a.serv.Start(":8080"); err != nil {
 		return err
 	}
@@ -22,6 +43,6 @@ func (a *App) Start() error {
 }
 
 func (a *App) Close() error {
-
+	a.mrepository.Close()
 	return nil
 }
