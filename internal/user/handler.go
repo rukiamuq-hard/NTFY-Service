@@ -1,6 +1,7 @@
 package user
 
 import (
+	"Service/internal/models"
 	"Service/internal/tg-bot"
 	"strconv"
 
@@ -35,11 +36,18 @@ func (h *UserHandler) Send(c *echo.Context) error {
 
 	ctx := c.Request().Context()
 
+	req := models.Request{
+		Token:   token,
+		Chat_id: id,
+		Message: message,
+		Ip:      c.RealIP(),
+	}
+
 	if err := h.tService.Send(token, id, message); err != nil {
 		return err
 	}
 
-	if err := h.repository.StoreData(ctx, token, id, message); err != nil {
+	if err := h.repository.StoreData(ctx, req); err != nil {
 		return err
 	}
 

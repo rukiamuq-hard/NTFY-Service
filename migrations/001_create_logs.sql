@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS Logs (
   token TEXT NOT NULL,
   chat_id BIGINT NOT NULL,
-  message TEXT NOT NULL
+  message TEXT NOT NULL,
+  ip inet NOT NULL
 );
