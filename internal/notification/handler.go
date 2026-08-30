@@ -2,9 +2,7 @@ package notification
 
 import (
 	"Service/internal/models"
-	"Service/internal/tg-bot"
-	"strconv"
-
+	"Service/internal/telegram"
 	"github.com/labstack/echo/v5"
 )
 
@@ -25,31 +23,21 @@ func (h *UserHandler) Register(e *echo.Echo) {
 }
 
 func (h *UserHandler) Send(c *echo.Context) error {
-	token := c.FormValue("token")
-	chatID := c.FormValue("chat_id")
-	message := c.FormValue("message")
-
-	id, err := strconv.ParseInt(chatID, 10, 64)
-	if err != nil {
-		return c.JSON(400, "invalid chat_id")
+	var hook models.WebhookReceiver
+	if err := c.Bind(&hook); err != nil {
+		return c.JSON(400, map[string]string{"Status": "Incorrect POST request"})
 	}
+	hook.IP = c.RealIP()
 
 	ctx := c.Request().Context()
 
-	req := models.TelegramRequest{
-		Token:   token,
-		ChatID:  id,
-		Message: message,
-		IP:      c.RealIP(),
+	if err := h.tService.Send(hook); err != nil {
+		return c.JSON(400, map[string]string{"Status": "Error sending to Telegram!"})
 	}
 
-	if err := h.tService.Send(token, id, message); err != nil {
-		return err
+	if err := h.repository.StoreData(ctx, hook); err != nil {
+		return c.JSON(400, map[string]string{"Status": "Error with repository!"})
 	}
 
-	if err := h.repository.StoreData(ctx, req); err != nil {
-		return err
-	}
-
-	return nil
+	return c.JSON(200, map[string]string{"Status": "Sended!"})
 }

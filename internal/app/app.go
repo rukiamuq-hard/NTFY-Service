@@ -1,17 +1,17 @@
 package app
 
 import (
-	es "Service/internal/echo-serv"
-	"Service/internal/notification"
-	"Service/internal/repository"
-	ts "Service/internal/tg-bot"
+	es "Service/internal/echo-serv" // echo server
+	"Service/internal/notification" // ntfy service
+	"Service/internal/repository"   // repository
+	ts "Service/internal/telegram"  // tg service
 )
 
 type App struct {
 	serv        *es.Server
 	uhandler    *notification.UserHandler
 	tservice    *ts.TGService
-	mrepository *repository.Repository // main repository
+	mrepository *repository.Postgress // main repository
 	urepository *notification.Repository
 }
 
@@ -26,7 +26,7 @@ func (a *App) Start() error {
 		return err
 	}
 
-	a.urepository = notification.NewUserRepo(a.mrepository.Mydb)
+	a.urepository = notification.NewUserRepo(a.mrepository.DB)
 
 	a.serv = es.New()     // echo server
 	a.tservice = ts.New() // tg service

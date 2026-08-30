@@ -17,7 +17,7 @@ func NewUserRepo(db *sql.DB) *Repository {
 	return &Repository{db: db}
 }
 
-func (r *Repository) StoreData(ctx context.Context, req models.TelegramRequest) error {
+func (r *Repository) StoreData(ctx context.Context, req models.WebhookReceiver) error {
 	_, err := r.db.ExecContext(ctx, StoreSQLCommand, req.Token, req.ChatID, req.Message, req.IP)
 	if err != nil {
 		return err

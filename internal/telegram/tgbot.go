@@ -1,6 +1,8 @@
 package tServ
 
 import (
+	"Service/internal/models"
+
 	tele "gopkg.in/telebot.v4"
 )
 
@@ -11,16 +13,16 @@ func New() *TGService {
 	return &TGService{}
 }
 
-func (tb *TGService) Send(token string, chatID int64, message string) error {
+func (tb *TGService) Send(req models.WebhookReceiver) error {
 	bot, err := tele.NewBot(tele.Settings{
-		Token: token,
+		Token: req.Token,
 	})
 
 	if err != nil {
 		return err
 	}
 
-	_, err = bot.Send(&tele.Chat{ID: chatID}, message)
+	_, err = bot.Send(&tele.Chat{ID: req.ChatID}, req.Message)
 
 	return err
 }

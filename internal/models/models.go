@@ -1,8 +1,8 @@
 package models
 
-type TelegramRequest struct {
-	Token   string
-	ChatID  int64
-	Message string
+type WebhookReceiver struct {
+	Token   string `json:"token"`
+	ChatID  int64  `json:"chat_id"`
+	Message string `json:"message"`
 	IP      string
 }
