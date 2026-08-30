@@ -6,15 +6,15 @@ import (
 	"os"
 )
 
-type Repository struct {
-	Mydb *sql.DB
+type Postgress struct {
+	DB *sql.DB
 }
 
-func New() *Repository {
-	return &Repository{}
+func New() *Postgress {
+	return &Postgress{}
 }
 
-func (db *Repository) Connect() error {
+func (pg *Postgress) Connect() error {
 	user := os.Getenv("user")
 	password := os.Getenv("password")
 	host := os.Getenv("host")
@@ -26,19 +26,19 @@ func (db *Repository) Connect() error {
 		host, dbname, user, password, sslmode)
 
 	var err error
-	db.Mydb, err = sql.Open("postgres", line)
+	pg.DB, err = sql.Open("postgres", line)
 	if err != nil {
 		return err
 	}
 
-	if err = db.Mydb.Ping(); err != nil {
+	if err = pg.DB.Ping(); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (db *Repository) Close() error {
-	if err := db.Mydb.Close(); err != nil {
+func (pg *Postgress) Close() error {
+	if err := pg.DB.Close(); err != nil {
 		return err
 	}
 	return nil

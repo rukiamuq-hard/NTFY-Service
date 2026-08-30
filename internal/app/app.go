@@ -2,17 +2,17 @@ package app
 
 import (
 	es "Service/internal/echo-serv"
+	"Service/internal/notification"
 	"Service/internal/repository"
 	ts "Service/internal/tg-bot"
-	"Service/internal/user"
 )
 
 type App struct {
 	serv        *es.Server
-	uhandler    *user.UserHandler
+	uhandler    *notification.UserHandler
 	tservice    *ts.TGService
 	mrepository *repository.Repository // main repository
-	urepository *user.Repository
+	urepository *notification.Repository
 }
 
 func New() *App {
@@ -26,13 +26,13 @@ func (a *App) Start() error {
 		return err
 	}
 
-	a.urepository = user.NewUserRepo(a.mrepository.Mydb)
+	a.urepository = notification.NewUserRepo(a.mrepository.Mydb)
 
 	a.serv = es.New()     // echo server
 	a.tservice = ts.New() // tg service
 
 	//handlers
-	a.uhandler = user.New(a.tservice, a.urepository)
+	a.uhandler = notification.New(a.tservice, a.urepository)
 	a.uhandler.Register(a.serv.ServEcho)
 
 	if err := a.serv.Start(":8080"); err != nil {

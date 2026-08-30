@@ -1,4 +1,4 @@
-package user
+package notification
 
 import (
 	"Service/internal/models"
@@ -36,11 +36,11 @@ func (h *UserHandler) Send(c *echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	req := models.Request{
+	req := models.TelegramRequest{
 		Token:   token,
-		Chat_id: id,
+		ChatID:  id,
 		Message: message,
-		Ip:      c.RealIP(),
+		IP:      c.RealIP(),
 	}
 
 	if err := h.tService.Send(token, id, message); err != nil {

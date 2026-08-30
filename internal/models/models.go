@@ -1,8 +1,8 @@
 package models
 
-type Request struct {
+type TelegramRequest struct {
 	Token   string
-	Chat_id int64
+	ChatID  int64
 	Message string
-	Ip      string
+	IP      string
 }

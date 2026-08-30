@@ -1,4 +1,4 @@
-package user
+package notification
 
 import (
 	"Service/internal/models"
@@ -17,8 +17,8 @@ func NewUserRepo(db *sql.DB) *Repository {
 	return &Repository{db: db}
 }
 
-func (r *Repository) StoreData(ctx context.Context, req models.Request) error {
-	_, err := r.db.ExecContext(ctx, StoreSQLCommand, req.Token, req.Chat_id, req.Message, req.Ip)
+func (r *Repository) StoreData(ctx context.Context, req models.TelegramRequest) error {
+	_, err := r.db.ExecContext(ctx, StoreSQLCommand, req.Token, req.ChatID, req.Message, req.IP)
 	if err != nil {
 		return err
 	}
