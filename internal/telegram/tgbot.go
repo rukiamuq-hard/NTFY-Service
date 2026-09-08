@@ -13,7 +13,7 @@ func New() *TGService {
 	return &TGService{}
 }
 
-func (tb *TGService) Send(req models.WebhookReceiver) error {
+func (tb *TGService) Send(req models.RequestTelegram) error {
 	bot, err := tele.NewBot(tele.Settings{
 		Token: req.Token,
 	})

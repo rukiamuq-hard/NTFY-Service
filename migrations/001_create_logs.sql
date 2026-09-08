@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS Logs (
   id BIGSERIAL PRIMARY KEY,
-  token TEXT NOT NULL,
-  chat_id BIGINT NOT NULL,
+  provider VARCHAR(32) NOT NULL,
+  recipient TEXT NOT NULL,
   message TEXT NOT NULL,
   ip inet NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()

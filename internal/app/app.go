@@ -1,16 +1,18 @@
 package app
 
 import (
+	ds "Service/internal/discord"   // discord service
 	es "Service/internal/echo-serv" // echo server
 	"Service/internal/notification" // ntfy service
 	"Service/internal/repository"   // repository
-	ts "Service/internal/telegram"  // tg service
+	ts "Service/internal/telegram"  // telegram service
 )
 
 type App struct {
 	serv        *es.Server
-	uhandler    *notification.UserHandler
+	uhandler    *notification.NotifyHandler
 	tservice    *ts.TGService
+	dservice    *ds.DSService
 	mrepository *repository.Postgress // main repository
 	urepository *notification.Repository
 }
@@ -30,9 +32,10 @@ func (a *App) Start() error {
 
 	a.serv = es.New()     // echo server
 	a.tservice = ts.New() // tg service
+	a.dservice = ds.New() // ds service
 
 	//handlers
-	a.uhandler = notification.New(a.tservice, a.urepository)
+	a.uhandler = notification.New(a.tservice, a.dservice, a.urepository)
 	a.uhandler.Register(a.serv.ServEcho)
 
 	if err := a.serv.Start(":8080"); err != nil {
