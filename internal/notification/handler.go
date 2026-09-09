@@ -56,21 +56,25 @@ func (h *NotifyHandler) SendTelegram(c *echo.Context) error {
 }
 
 func (h *NotifyHandler) SendDiscord(c *echo.Context) error {
-	var hook models.NotificationLog
+	var hook models.RequestDiscord
 	if err := c.Bind(&hook); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"Status": "Incorrect POST request"})
 	}
 
-	hook.Provider = "Discord"
-	hook.IP = c.RealIP()
+	repohook := models.NotificationLog{
+		Recipient: hook.WebHook,
+		Provider:  "Discord",
+		Message:   hook.Message,
+		IP:        c.RealIP(),
+	}
 
 	ctx := c.Request().Context()
 
-	if err := h.dService.Send(ctx, hook); err != nil {
+	if err := h.dService.Send(ctx, repohook); err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"Status": "Failed to sent message!"})
 	}
 
-	if err := h.repository.StoreData(ctx, hook); err != nil {
+	if err := h.repository.StoreData(ctx, repohook); err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"Status": "Failed to store data!"}) //delete too
 	}
 

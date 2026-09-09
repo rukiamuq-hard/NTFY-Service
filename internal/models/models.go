@@ -6,6 +6,11 @@ type RequestTelegram struct {
 	Message string `json:"message"`
 }
 
+type RequestDiscord struct {
+	WebHook string `json:"webhook"`
+	Message string `json:"message"`
+}
+
 type NotificationLog struct {
 	Recipient string `json:"recipient"`
 	Provider  string `json:"provider"`
